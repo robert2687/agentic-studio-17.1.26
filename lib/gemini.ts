@@ -182,6 +182,32 @@ export async function generateCode(userPrompt: string, plan: any, theme?: Design
 }
 
 /**
+ * ITERATIVE CODER AGENT
+ * Refines existing code based on new instructions.
+ */
+export async function updateCode(currentCode: string, userPrompt: string) {
+  const model = 'gemini-3-pro-preview';
+  
+  const response = await ai.models.generateContent({
+    model,
+    contents: `You are a Senior React Developer. Update the existing code based on the user's request.
+    
+    Current Code:
+    ${currentCode}
+    
+    User Request: "${userPrompt}"
+    
+    Instructions:
+    - Return the FULLY UPDATED App.tsx file content.
+    - Do not omit existing functionality unless asked.
+    - Maintain the single-file structure.
+    `,
+  });
+
+  return response.text;
+}
+
+/**
  * COMPILER AGENT (PREVIEW GENERATOR)
  * Injects error capturing for self-healing.
  */

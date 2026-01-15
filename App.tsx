@@ -6,8 +6,8 @@ import CodeEditor from './components/CodeEditor';
 import Terminal from './components/Terminal';
 import Preview from './components/Preview';
 import { INITIAL_FILES } from './lib/mockData';
-import { generateProjectPlan, generateCode, compileToHtml, fixCode, chatWithAI, generateDesignSystem } from './lib/gemini';
-import { Send, Sparkles, Layout, Zap, GripVertical, PanelBottom, Sidebar as SidebarIcon, MonitorPlay } from 'lucide-react';
+import { generateProjectPlan, generateCode, compileToHtml, fixCode, chatWithAI, generateDesignSystem, updateCode } from './lib/gemini';
+import { Send, Sparkles, Layout, Zap, GripVertical, PanelBottom, Sidebar as SidebarIcon, MonitorPlay, Play } from 'lucide-react';
 
 const App: React.FC = () => {
   const [prompt, setPrompt] = useState('Create a modern crypto dashboard with dark mode and real-time charts');
@@ -56,14 +56,12 @@ const App: React.FC = () => {
       document.removeEventListener('mousemove', doDrag);
       document.removeEventListener('mouseup', stopDrag);
       document.body.style.cursor = 'default';
-      // Re-enable pointer events on iframes
       const iframes = document.querySelectorAll('iframe');
       iframes.forEach(el => el.style.pointerEvents = 'auto');
     };
 
     document.addEventListener('mousemove', doDrag);
     document.addEventListener('mouseup', stopDrag);
-    // Disable pointer events on iframes during drag to prevent capturing mouse
     const iframes = document.querySelectorAll('iframe');
     iframes.forEach(el => el.style.pointerEvents = 'none');
     document.body.style.cursor = direction === 'terminal' ? 'row-resize' : 'col-resize';
@@ -140,14 +138,64 @@ const App: React.FC = () => {
       }
   };
 
+  const handleManualCompile = async () => {
+     if (!state.codeContent) return;
+     setState(prev => ({ ...prev, status: 'running', activeAgent: 'compiler' }));
+     addLog('user', 'Manual build triggered', 'info');
+     try {
+        const html = await compileToHtml(state.codeContent);
+        setState(prev => ({ ...prev, previewContent: html }));
+        addLog('compiler', 'Build successful', 'success');
+     } catch (e: any) {
+        addLog('compiler', `Build failed: ${e.message}`, 'error');
+     } finally {
+        setState(prev => ({ ...prev, status: 'completed', activeAgent: 'idle' }));
+     }
+  };
+
   const startSimulation = async () => {
     if (state.status === 'running') return;
+    
+    // If we have completed code, this is an update/refinement
+    if (state.status === 'completed' && state.codeContent) {
+        await runRefinementSequence(prompt);
+        return;
+    }
+
+    // Otherwise, start fresh
     setState(prev => ({ ...prev, status: 'running', logs: [], files: INITIAL_FILES, codeContent: '', previewContent: null }));
     try {
         await runAgentSequence(prompt);
     } catch (error: any) {
         addLog('system', `Critical Error: ${error.message}`, 'error');
         setState(prev => ({ ...prev, status: 'error', activeAgent: 'idle' }));
+    }
+  };
+
+  const runRefinementSequence = async (userPrompt: string) => {
+    setState(prev => ({ ...prev, status: 'running', activeAgent: 'coder' }));
+    addLog('user', `Requested update: "${userPrompt}"`, 'info');
+    
+    try {
+        addLog('coder', 'Refining implementation...', 'info');
+        let updatedCode = await updateCode(state.codeContent, userPrompt);
+        updatedCode = updatedCode.replace(/^```tsx|^```typescript|^```javascript|^```/g, '').replace(/```$/g, '');
+        
+        setState(prev => ({ ...prev, codeContent: updatedCode }));
+        addLog('coder', 'Code updated', 'success');
+        
+        setState(prev => ({ ...prev, activeAgent: 'compiler' }));
+        await wait(500);
+        addLog('compiler', 'Re-compiling...', 'info');
+        
+        const html = await compileToHtml(updatedCode);
+        setState(prev => ({ ...prev, previewContent: html }));
+        addLog('compiler', 'Build successful', 'success');
+        
+    } catch (e: any) {
+        addLog('system', `Update failed: ${e.message}`, 'error');
+    } finally {
+        setState(prev => ({ ...prev, activeAgent: 'idle', status: 'completed' }));
     }
   };
 
@@ -252,19 +300,28 @@ const App: React.FC = () => {
              onChange={(e) => setPrompt(e.target.value)}
              onKeyDown={(e) => e.key === 'Enter' && startSimulation()}
              className="w-full bg-black/20 border border-ide-border rounded-lg pl-10 pr-24 py-2 text-sm focus:outline-none focus:border-ide-accent focus:bg-ide-panel transition-all text-slate-200 placeholder:text-slate-600"
-             placeholder="Describe your dream app..."
+             placeholder={state.status === 'completed' ? "Describe changes to update the app..." : "Describe your dream app..."}
            />
            <button 
              onClick={startSimulation}
              disabled={state.status === 'running'}
              className="absolute right-1.5 top-1.5 bottom-1.5 bg-ide-accent hover:bg-ide-accentHover text-white px-3 text-xs font-medium rounded-md flex items-center gap-2 transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed shadow-sm"
            >
-             {state.status === 'running' ? 'Building...' : 'Generate'}
+             {state.status === 'running' ? 'Working...' : state.status === 'completed' ? 'Update' : 'Generate'}
              <Send size={12} />
            </button>
         </div>
 
         <div className="flex items-center gap-4 w-48 justify-end">
+           {state.status === 'completed' && (
+             <button 
+                onClick={handleManualCompile}
+                className="bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-600/30 px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 transition-colors"
+                title="Run manual code changes"
+             >
+                <Play size={12} fill="currentColor" /> Run
+             </button>
+           )}
            <AgentStatus activeAgent={state.activeAgent} status={state.status} />
         </div>
       </header>
@@ -294,7 +351,8 @@ const App: React.FC = () => {
              <CodeEditor 
                content={state.codeContent} 
                fileName={state.currentFile}
-               activeAgent={state.activeAgent} 
+               activeAgent={state.activeAgent}
+               onChange={(newCode) => setState(prev => ({ ...prev, codeContent: newCode }))}
              />
              
              {/* Floating Agent Status Toast */}
