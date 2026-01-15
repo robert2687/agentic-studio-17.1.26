@@ -310,3 +310,79 @@ export async function chatWithAI(history: ChatMessage[], newMessage: string, cod
 
   return response.text || "I couldn't generate a response.";
 }
+
+/**
+ * TEST GENERATOR AGENT
+ * Generates Jest test suites for code
+ */
+export async function generateTests(code: string, testType: 'unit' | 'integration' | 'tdd', options?: {
+  functionName?: string;
+  targetCoverage?: number;
+}) {
+  const model = 'gemini-3-pro-preview';
+  
+  let prompt = '';
+  
+  if (testType === 'unit') {
+    prompt = `You are a Senior Test Engineer. Generate comprehensive Jest unit tests for this code:
+
+\`\`\`typescript
+${code}
+\`\`\`
+
+${options?.functionName ? `Focus on testing the function: ${options.functionName}` : 'Generate tests for ALL exported functions'}
+
+Requirements:
+- Use Jest testing framework
+- Test happy paths and edge cases
+- Test error handling
+- Mock external dependencies
+- Target coverage: ${options?.targetCoverage || 90}%
+- Include describe/it blocks
+- Add meaningful test descriptions
+
+Return ONLY the complete test file code.`;
+  } else if (testType === 'integration') {
+    prompt = `You are a Senior Test Engineer. Generate Jest integration tests for this API/component:
+
+\`\`\`typescript
+${code}
+\`\`\`
+
+Requirements:
+- Test API endpoints or component integration
+- Verify request/response flows
+- Test error scenarios
+- Mock external services
+- Use supertest for API testing
+- Include setup/teardown
+
+Return ONLY the complete test file code.`;
+  } else {
+    prompt = `You are a TDD expert. Generate Jest tests BEFORE implementation for this specification:
+
+User Story/Requirements:
+${code}
+
+Generate:
+- Complete test suite structure
+- Test cases for all requirements
+- Expected behavior specifications
+- Mock data and fixtures
+- Tests that will initially fail (Red phase of TDD)
+
+Return ONLY the complete test file code.`;
+  }
+
+  const response = await ai.models.generateContent({
+    model,
+    contents: prompt
+  });
+
+  let testCode = response.text || '';
+  
+  // Clean up code markers
+  testCode = testCode.replace(/^```typescript/gm, '').replace(/^```javascript/gm, '').replace(/^```/gm, '').replace(/```$/gm, '').trim();
+  
+  return testCode;
+}

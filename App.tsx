@@ -5,9 +5,10 @@ import FileExplorer from './components/FileExplorer';
 import CodeEditor from './components/CodeEditor';
 import Terminal from './components/Terminal';
 import Preview from './components/Preview';
+import TestGenerator from './components/TestGenerator';
 import { INITIAL_FILES } from './lib/mockData';
-import { generateProjectPlan, generateCode, compileToHtml, fixCode, chatWithAI, generateDesignSystem, updateCode } from './lib/gemini';
-import { Send, Sparkles, Layout, Zap, GripVertical, PanelBottom, Sidebar as SidebarIcon, MonitorPlay, Play } from 'lucide-react';
+import { generateProjectPlan, generateCode, compileToHtml, fixCode, chatWithAI, generateDesignSystem, updateCode, generateTests } from './lib/gemini';
+import { Send, Sparkles, Layout, Zap, GripVertical, PanelBottom, Sidebar as SidebarIcon, MonitorPlay, Play, FlaskConical } from 'lucide-react';
 
 const App: React.FC = () => {
   const [prompt, setPrompt] = useState('Create a modern crypto dashboard with dark mode and real-time charts');
@@ -30,6 +31,7 @@ const App: React.FC = () => {
   const [terminalHeight, setTerminalHeight] = useState(250);
   const [isResizing, setIsResizing] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
+  const [showTestPanel, setShowTestPanel] = useState(false);
 
   // Resize Handlers
   const startResizing = useCallback((direction: 'sidebar' | 'preview' | 'terminal') => (e: React.MouseEvent) => {
@@ -135,6 +137,35 @@ const App: React.FC = () => {
       } catch (e: any) {
           addLog('patcher', `Healing failed: ${e.message}`, 'error');
           setState(prev => ({ ...prev, status: 'error', activeAgent: 'idle' }));
+      }
+  };
+
+  const handleGenerateTests = async (options: { type: 'unit' | 'integration' | 'tdd'; targetCoverage?: number; functionName?: string }) => {
+      if (!state.codeContent) {
+          throw new Error('No code available to generate tests for');
+      }
+      
+      addLog('system', `Generating ${options.type} tests...`, 'info');
+      
+      try {
+          const testCode = await generateTests(state.codeContent, options.type, {
+              functionName: options.functionName,
+              targetCoverage: options.targetCoverage
+          });
+          
+          // Add test file to the file tree
+          const testFileName = state.currentFile?.replace('.tsx', '.test.tsx') || 'App.test.tsx';
+          const newFiles = [...state.files, { 
+              name: testFileName, 
+              type: 'file' as const, 
+              content: testCode 
+          }];
+          
+          setState(prev => ({ ...prev, files: newFiles }));
+          addLog('system', `Test file ${testFileName} generated successfully`, 'success');
+      } catch (e: any) {
+          addLog('system', `Test generation failed: ${e.message}`, 'error');
+          throw e;
       }
   };
 
@@ -312,15 +343,24 @@ const App: React.FC = () => {
            </button>
         </div>
 
-        <div className="flex items-center gap-4 w-48 justify-end">
+        <div className="flex items-center gap-2 w-48 justify-end">
            {state.status === 'completed' && (
-             <button 
-                onClick={handleManualCompile}
-                className="bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-600/30 px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 transition-colors"
-                title="Run manual code changes"
-             >
-                <Play size={12} fill="currentColor" /> Run
-             </button>
+             <>
+               <button 
+                  onClick={() => setShowTestPanel(!showTestPanel)}
+                  className={`${showTestPanel ? 'bg-purple-600/30 text-purple-300 border-purple-600/50' : 'bg-purple-600/20 text-purple-400 border-purple-600/30'} hover:bg-purple-600/40 border px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 transition-colors`}
+                  title="Toggle Test Generator"
+               >
+                  <FlaskConical size={12} /> Tests
+               </button>
+               <button 
+                  onClick={handleManualCompile}
+                  className="bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-600/30 px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 transition-colors"
+                  title="Run manual code changes"
+               >
+                  <Play size={12} fill="currentColor" /> Run
+               </button>
+             </>
            )}
            <AgentStatus activeAgent={state.activeAgent} status={state.status} />
         </div>
@@ -396,18 +436,29 @@ const App: React.FC = () => {
           <div className="w-0.5 h-8 bg-slate-700 group-hover:bg-blue-400 rounded-full transition-colors" />
         </div>
 
-        {/* Right: Preview */}
+        {/* Right: Preview or Test Generator */}
         <div style={{ width: previewWidth }} className="flex-shrink-0 bg-ide-bg flex flex-col transition-none">
-           <div className="h-9 border-b border-ide-border flex items-center px-3 gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider bg-ide-panel">
-             <MonitorPlay size={12} /> Live Preview
-           </div>
-           <div className="flex-1 p-4 bg-zinc-950/50">
-             <Preview 
-               url={state.previewUrl} 
-               isReady={state.status === 'completed'} 
-               activeAgent={state.activeAgent}
-               previewContent={state.previewContent}
+           {showTestPanel ? (
+             <TestGenerator 
+               codeContent={state.codeContent}
+               onGenerateTests={handleGenerateTests}
              />
+           ) : (
+             <>
+               <div className="h-9 border-b border-ide-border flex items-center px-3 gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider bg-ide-panel">
+                 <MonitorPlay size={12} /> Live Preview
+               </div>
+               <div className="flex-1 p-4 bg-zinc-950/50">
+                 <Preview 
+                   url={state.previewUrl} 
+                   isReady={state.status === 'completed'} 
+                   activeAgent={state.activeAgent}
+                   previewContent={state.previewContent}
+                 />
+               </div>
+             </>
+           )}
+        </div>
            </div>
         </div>
 
