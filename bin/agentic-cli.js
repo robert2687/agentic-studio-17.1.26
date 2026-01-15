@@ -29,8 +29,9 @@ program
     const spinner = ora('Analyzing code and generating tests...').start();
     
     try {
-      if (!options.func && !options.path) {
-        spinner.fail('Please provide either --func or --path');
+      // Path is required for file operations
+      if (!options.path) {
+        spinner.fail('Please provide --path to the file containing the function');
         process.exit(1);
       }
 
