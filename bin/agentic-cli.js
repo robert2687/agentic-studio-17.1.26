@@ -7,6 +7,8 @@
 import { Command } from 'commander';
 import { generateUnitTests, expandTests, generateIntegrationTests } from '../lib/testGenerator.js';
 import { createProject, loadProject, listProjects } from '../lib/projectManager.js';
+import { access } from 'fs/promises';
+import { constants } from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
 
@@ -32,6 +34,15 @@ program
       // Path is required for file operations
       if (!options.path) {
         spinner.fail('Please provide --path to the file containing the function');
+        process.exit(1);
+      }
+
+      // Validate that the file exists and is readable
+      try {
+        await access(options.path, constants.R_OK);
+      } catch (error) {
+        spinner.fail(`Cannot read file: ${options.path}`);
+        console.error(chalk.red('Make sure the file exists and you have read permissions'));
         process.exit(1);
       }
 
@@ -65,6 +76,15 @@ program
     const spinner = ora('Analyzing test coverage and expanding tests...').start();
     
     try {
+      // Validate that the file/directory exists
+      try {
+        await access(options.path, constants.R_OK);
+      } catch (error) {
+        spinner.fail(`Cannot access path: ${options.path}`);
+        console.error(chalk.red('Make sure the path exists and you have read permissions'));
+        process.exit(1);
+      }
+      
       const result = await expandTests({
         testPath: options.path,
         targetCoverage: parseInt(options.coverage)
