@@ -1,6 +1,7 @@
 import React from 'react';
 import { FileNode } from '../types';
 import { Folder, FileCode, FileJson, ChevronRight, ChevronDown, File } from 'lucide-react';
+import './FileExplorer.css';
 
 interface FileExplorerProps
 {
@@ -31,8 +32,8 @@ const FileTreeItem: React.FC<FileTreeItemProps> = ( { node, depth, activeFile } 
   return (
     <div>
       <div
-        className={ `flex items-center gap-1.5 py-1 px-2 cursor-pointer select-none hover:bg-ide-panel transition-colors ${ isActive ? 'bg-ide-panel text-white' : 'text-slate-400' }` }
-        style={ { paddingLeft: `${ depth * 12 + 8 }px` } }
+        className={ `flex items-center gap-1.5 py-1 px-2 cursor-pointer select-none hover:bg-ide-panel transition-colors file-tree-item ${ isActive ? 'bg-ide-panel text-white' : 'text-slate-400' }` }
+        style={ { '--tree-depth': depth } as React.CSSProperties }
         onClick={ () => node.type === 'folder' && setIsOpen( !isOpen ) }
       >
         { node.type === 'folder' && (
