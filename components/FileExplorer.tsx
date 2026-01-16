@@ -32,8 +32,7 @@ const FileTreeItem = ( { node, depth, activeFile }: FileTreeItemProps ) =>
   return (
     <div>
       <div
-        className={ `flex items-center gap-1.5 py-1 px-2 cursor-pointer select-none hover:bg-ide-panel transition-colors file-tree-item ${ isActive ? 'bg-ide-panel text-white' : 'text-slate-400' }` }
-        style={ { '--tree-depth': depth } as React.CSSProperties }
+        className={ `flex items-center gap-1.5 py-1 cursor-pointer select-none hover:bg-ide-panel transition-colors file-tree-item depth-${ depth } ${ isActive ? 'bg-ide-panel text-white' : 'text-slate-400' }` }
         onClick={ () => node.type === 'folder' && setIsOpen( !isOpen ) }
       >
         { node.type === 'folder' && (
