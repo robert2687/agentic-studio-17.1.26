@@ -1,6 +1,7 @@
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import theme from '../lib/theme.json';
+import './StatCard.css';
 
 interface StatCardProps
 {
@@ -16,8 +17,7 @@ const StatCard: React.FC<StatCardProps> = ( { symbol, price, change, sparkline }
 
     return (
         <div
-            className="p-6 rounded-3xl border border-slate-800/50 backdrop-blur-xl hover:border-slate-700/50 transition-all group"
-            style={ { backgroundColor: `${ theme.colors.surface }cc` } }
+            className="p-6 rounded-3xl border border-slate-800/50 backdrop-blur-xl hover:border-slate-700/50 transition-all group stat-card-surface"
         >
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -37,7 +37,7 @@ const StatCard: React.FC<StatCardProps> = ( { symbol, price, change, sparkline }
 
             <div className="flex items-end justify-between">
                 <div className="space-y-1">
-                    <p className="text-2xl font-black tracking-tight" style={ { color: theme.colors.text.base } }>
+                    <p className="text-2xl font-black tracking-tight stat-card-text-base">
                         ${ price.toLocaleString() }
                     </p>
                     <p className="text-xs text-slate-500">24h Volume: $42.5B</p>
