@@ -2,13 +2,13 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import theme from '../lib/theme.json';
 import { PORTFOLIO_HISTORY } from '../lib/mockData';
+import './PortfolioChart.css';
 
 const PortfolioChart: React.FC = () =>
 {
     return (
         <div
-            className="flex-1 p-8 rounded-[2.5rem] border border-slate-800/50 backdrop-blur-xl"
-            style={ { backgroundColor: `${ theme.colors.surface }88` } }
+            className="flex-1 p-8 rounded-[2.5rem] border border-slate-800/50 backdrop-blur-xl portfolio-chart-container"
         >
             <div className="flex items-center justify-between mb-8">
                 <div>

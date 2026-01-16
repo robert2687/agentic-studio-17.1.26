@@ -25,15 +25,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ( { children } ) =>
                     <span className="text-xl font-bold tracking-tight">ASP CLI <span className="text-sky-400">PRO</span></span>
                 </div>
 
-                <nav className="flex-1 px-4 space-y-2 mt-4">
-                    <NavItem icon={ <LayoutDashboard size={ 20 } /> } label="Overview" active />
-                    <NavItem icon={ <Wallet size={ 20 } /> } label="Portfolio" />
-                    <NavItem icon={ <ArrowUpRight size={ 20 } /> } label="Transactions" />
-                    <NavItem icon={ <ArrowDownLeft size={ 20 } /> } label="Exchange" />
+                <nav className="flex-1 px-4 space-y-2 mt-4" aria-label="Main Navigation">
+                    <NavItem icon={ <LayoutDashboard size={ 20 } /> } label="Overview" active title="Overview" />
+                    <NavItem icon={ <Wallet size={ 20 } /> } label="Portfolio" title="Portfolio" />
+                    <NavItem icon={ <ArrowUpRight size={ 20 } /> } label="Transactions" title="Transactions" />
+                    <NavItem icon={ <ArrowDownLeft size={ 20 } /> } label="Exchange" title="Exchange" />
                 </nav>
 
                 <div className="p-4 border-t border-slate-800">
-                    <NavItem icon={ <Settings size={ 20 } /> } label="Settings" />
+                    <NavItem icon={ <Settings size={ 20 } /> } label="Settings" title="Settings" />
                 </div>
             </aside>
 
@@ -53,7 +53,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ( { children } ) =>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="p-2 hover:bg-slate-800 rounded-full relative">
+                        <button className="p-2 hover:bg-slate-800 rounded-full relative" title="Notifications" aria-label="View notifications">
                             <Bell size={ 20 } />
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-pink-500 rounded-full border border-slate-900"></span>
                         </button>
@@ -87,10 +87,14 @@ interface NavItemProps
     active?: boolean;
 }
 
-const NavItem: React.FC<NavItemProps> = ( { icon, label, active } ) => (
+const NavItem: React.FC<NavItemProps & { title?: string }> = ( { icon, label, active, title } ) => (
     <div
         className={ `flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all ${ active ? 'bg-sky-500/10 text-sky-400' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
             }` }
+        title={ title || label }
+        aria-label={ label }
+        role="button"
+        tabIndex={ 0 }
     >
         { icon }
         <span className="font-medium">{ label }</span>

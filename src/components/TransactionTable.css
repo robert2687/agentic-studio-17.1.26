@@ -1,0 +1,3 @@
+.transaction-table-container {
+    background-color: color-mix(in srgb, var(--color-surface), transparent 47%);
+}

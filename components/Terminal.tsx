@@ -106,7 +106,7 @@ const TypingIndicator = () => (
   </div>
 );
 
-const Terminal: React.FC<TerminalProps> = ( { logs, messages, onSendMessage, isTyping } ) =>
+const Terminal = ( { logs, messages, onSendMessage, isTyping }: TerminalProps ) =>
 {
   const [ activeTab, setActiveTab ] = useState<'trace' | 'chat'>( 'trace' );
   const [ input, setInput ] = useState( '' );
@@ -133,6 +133,8 @@ const Terminal: React.FC<TerminalProps> = ( { logs, messages, onSendMessage, isT
         <button
           onClick={ () => setActiveTab( 'trace' ) }
           className={ `relative flex items-center gap-2 text-xs font-medium py-2 px-4 transition-colors ${ activeTab === 'trace' ? 'text-blue-400 bg-white/5' : 'text-slate-500 hover:text-slate-300' }` }
+          title="Switch to Agent Trace"
+          aria-label="Agent Trace Tab"
         >
           <TerminalIcon size={ 14 } />
           <span>Agent Trace</span>
@@ -141,6 +143,8 @@ const Terminal: React.FC<TerminalProps> = ( { logs, messages, onSendMessage, isT
         <button
           onClick={ () => setActiveTab( 'chat' ) }
           className={ `relative flex items-center gap-2 text-xs font-medium py-2 px-4 transition-colors ${ activeTab === 'chat' ? 'text-blue-400 bg-white/5' : 'text-slate-500 hover:text-slate-300' }` }
+          title="Switch to Assistant Chat"
+          aria-label="Assistant Chat Tab"
         >
           <MessageSquare size={ 14 } />
           <span>Assistant</span>

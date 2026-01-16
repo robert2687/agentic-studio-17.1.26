@@ -24,7 +24,7 @@ interface FileTreeItemProps
   activeFile: string | null;
 }
 
-const FileTreeItem: React.FC<FileTreeItemProps> = ( { node, depth, activeFile } ) =>
+const FileTreeItem = ( { node, depth, activeFile }: FileTreeItemProps ) =>
 {
   const [ isOpen, setIsOpen ] = React.useState( node.isOpen || false );
   const isActive = activeFile === node.name;
@@ -62,7 +62,7 @@ const FileTreeItem: React.FC<FileTreeItemProps> = ( { node, depth, activeFile } 
   );
 };
 
-const FileExplorer: React.FC<FileExplorerProps> = ( { files, activeFile } ) =>
+const FileExplorer = ( { files, activeFile }: FileExplorerProps ) =>
 {
   return (
     <div className="flex flex-col h-full bg-ide-sidebar border-r border-ide-border w-64 flex-shrink-0">
