@@ -1,10 +1,10 @@
 import React from 'react';
 import './src/styles/theme.css';
-import DashboardLayout from './components/DashboardLayout';
-import StatCard from './components/StatCard';
-import PortfolioChart from './components/PortfolioChart';
-import TransactionTable from './components/TransactionTable';
-import { TICKERS } from './lib/mockData';
+import DashboardLayout from './src/components/DashboardLayout';
+import StatCard from './src/components/StatCard';
+import PortfolioChart from './src/components/PortfolioChart';
+import TransactionTable from './src/components/TransactionTable';
+import { TICKERS } from './src/lib/mockData';
 
 function App ()
 {
