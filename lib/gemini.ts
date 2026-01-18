@@ -335,7 +335,7 @@ export async function generateTests ( code: string, testType: 'unit' | 'integrat
   targetCoverage?: number;
 } )
 {
-  const model = 'gemini-3-pro-preview';
+  const model = 'gemini-1.5-pro';
 
   let prompt = '';
 
