@@ -9,6 +9,13 @@ interface PreviewProps {
 }
 
 const Preview: React.FC<PreviewProps> = ({ url, isReady, activeAgent, previewContent }) => {
+  const handleOpenNewTab = () => {
+    if (!previewContent) return;
+    const blob = new Blob([previewContent], { type: 'text/html' });
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+  };
+
   return (
     <div className="h-full flex flex-col bg-white overflow-hidden rounded-tl-xl border-l border-ide-border">
       {/* Browser Toolbar */}
@@ -22,7 +29,14 @@ const Preview: React.FC<PreviewProps> = ({ url, isReady, activeAgent, previewCon
            <ShieldCheck size={12} className="text-green-500" />
            <span className="truncate">{url}</span>
         </div>
-        <ExternalLink size={14} className="text-slate-400 cursor-pointer hover:text-slate-600" />
+        <button 
+          onClick={handleOpenNewTab}
+          disabled={!isReady || !previewContent}
+          className="text-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          title="Open in new tab"
+        >
+          <ExternalLink size={14} />
+        </button>
       </div>
 
       {/* Preview Content */}
@@ -32,7 +46,7 @@ const Preview: React.FC<PreviewProps> = ({ url, isReady, activeAgent, previewCon
             srcDoc={previewContent}
             title="App Preview"
             className="w-full h-full border-none"
-            sandbox="allow-scripts"
+            sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"
           />
         ) : (
           <div className="flex flex-col items-center justify-center h-full bg-slate-50 p-8 text-center">

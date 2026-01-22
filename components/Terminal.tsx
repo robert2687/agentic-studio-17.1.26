@@ -27,7 +27,7 @@ interface TerminalProps {
   isTyping?: boolean;
 }
 
-const AgentIcon = ({ role }: { role: AgentRole }) => {
+const AgentIcon: React.FC<{ role: AgentRole }> = ({ role }) => {
   switch(role) {
     case 'planner': return <BrainCircuit size={14} className="text-purple-400" />;
     case 'designer': return <PenTool size={14} className="text-pink-400" />;
@@ -39,7 +39,7 @@ const AgentIcon = ({ role }: { role: AgentRole }) => {
   }
 };
 
-const LogItem = ({ log }: { log: LogEntry }) => {
+const LogItem: React.FC<{ log: LogEntry }> = ({ log }) => {
   const isError = log.type === 'error';
   const isSuccess = log.type === 'success';
   const isWarning = log.type === 'warning';
@@ -85,7 +85,7 @@ const LogItem = ({ log }: { log: LogEntry }) => {
   );
 };
 
-const TypingIndicator = () => (
+const TypingIndicator: React.FC = () => (
   <div className="flex gap-3 flex-row animate-in fade-in duration-300">
      <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0">
         <Sparkles size={14} className="text-blue-400" />
@@ -206,6 +206,7 @@ const Terminal: React.FC<TerminalProps> = ({ logs, messages, onSendMessage, isTy
                    value={input}
                    onChange={(e) => setInput(e.target.value)}
                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                   disabled={isTyping}
                  />
                  <button 
                    onClick={handleSend} 

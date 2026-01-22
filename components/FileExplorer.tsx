@@ -14,7 +14,13 @@ const FileIcon = ({ name }: { name: string }) => {
   return <File size={14} className="text-slate-400" />;
 };
 
-const FileTreeItem = ({ node, depth, activeFile }: { node: FileNode; depth: number; activeFile: string | null }) => {
+interface FileTreeItemProps {
+  node: FileNode;
+  depth: number;
+  activeFile: string | null;
+}
+
+const FileTreeItem: React.FC<FileTreeItemProps> = ({ node, depth, activeFile }) => {
   const [isOpen, setIsOpen] = React.useState(node.isOpen || false);
   const isActive = activeFile === node.name;
 

@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { DesignSystem, ChatMessage } from "../types";
+import { DesignSystem, ChatMessage, AppDefinition } from "../types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -18,23 +18,32 @@ function cleanJson(text: string) {
 
 /**
  * PLANNER AGENT
- * Uses Gemini 3 Flash with Search to plan the file structure.
- * Enforces use of Search Grounding for accurate info.
+ * Uses Gemini 3 Flash with Search to plan the file structure based on strict requirements.
  */
-export async function generateProjectPlan(userPrompt: string) {
+export async function generateProjectPlan(definition: AppDefinition) {
   const model = 'gemini-3-flash-preview';
   
+  const userPrompt = `
+    App Type: ${definition.type}
+    Platform: ${definition.platform}
+    Tech Stack: ${definition.tech}
+    Features: ${definition.features.join(', ')}
+    Detailed Description: ${definition.description}
+  `;
+
   const response = await ai.models.generateContent({
     model,
-    contents: `You are a Senior Software Architect. Analyze the following user request and design a file structure for a modern React application using Tailwind CSS.
+    contents: `You are a Senior Software Architect. Analyze the following project definition and design a file structure for a modern React application.
     
-    User Request: "${userPrompt}"
+    Project Definition:
+    ${userPrompt}
     
-    Step 1: Use Google Search to identify the latest libraries, versions, or design patterns relevant to the request (e.g., "latest charting library for react", "crypto api free").
+    Step 1: Use Google Search to identify the best libraries or patterns for this specific app type (e.g., charting libs for dashboards, animation libs for landing pages).
     Step 2: Return a list of essential files needed.
     
     - Always include 'App.tsx' as the entry point.
     - Include a 'components' folder.
+    - If data is needed, create a 'lib/mockData.ts'.
     - Keep it simple but professional.
     `,
     config: {
@@ -55,21 +64,20 @@ export async function generateProjectPlan(userPrompt: string) {
               required: ["name", "type", "path"]
             }
           },
-          reasoning: { type: Type.STRING }
+          reasoning: { type: Type.STRING, description: "Brief explanation of the architecture choice." }
         }
       }
     }
   });
 
   const text = response.text || "{}";
-  // Attempt to clean if model wraps in markdown
   return JSON.parse(cleanJson(text));
 }
 
 /**
  * VISUAL DESIGNER AGENT
  */
-export async function generateDesignSystem(userPrompt: string): Promise<DesignSystem> {
+export async function generateDesignSystem(definition: AppDefinition): Promise<DesignSystem> {
   const model = 'gemini-3-flash-preview';
 
   const response = await ai.models.generateContent({
@@ -78,7 +86,9 @@ export async function generateDesignSystem(userPrompt: string): Promise<DesignSy
     You are a Lead UI/UX Designer specialized in creating **Design Systems** for modern web applications.
     
     ### INPUT
-    User Prompt: "${userPrompt}"
+    App Type: ${definition.type}
+    Description: ${definition.description}
+    Vibe: Auto-detect based on app type (e.g., Corporate for CRUD, Modern for Dashboard).
 
     ### OUTPUT FORMAT
     Return ONLY a valid JSON object matching the DesignSystem schema.
@@ -144,7 +154,7 @@ export async function generateDesignSystem(userPrompt: string): Promise<DesignSy
 /**
  * CODER AGENT
  */
-export async function generateCode(userPrompt: string, plan: any, theme?: DesignSystem) {
+export async function generateCode(definition: AppDefinition, plan: any, theme?: DesignSystem) {
   const model = 'gemini-3-pro-preview';
 
   let designInstructions = "";
@@ -161,9 +171,12 @@ export async function generateCode(userPrompt: string, plan: any, theme?: Design
     `;
   }
 
-  const response = await ai.models.generateContent({
-    model,
-    contents: `You are a 10x React Developer. Write the code for the main 'App.tsx' file based on this request: "${userPrompt}".
+  const prompt = `
+    You are a 10x React Developer. Write the code for the main 'App.tsx' file based on this project definition.
+    
+    Type: ${definition.type}
+    Features: ${definition.features.join(', ')}
+    Description: ${definition.description}
     
     Constraints:
     - Use React Functional Components.
@@ -171,11 +184,16 @@ export async function generateCode(userPrompt: string, plan: any, theme?: Design
     - Use 'lucide-react' for icons.
     - Write the FULL implementation in a single App.tsx file.
     - Do NOT use import statements for local files that don't exist.
+    - Mock data inside the file if needed.
     
     ${designInstructions}
     
     Plan Context: ${plan.reasoning}
-    `,
+  `;
+
+  const response = await ai.models.generateContent({
+    model,
+    contents: prompt,
   });
 
   return response.text;
@@ -183,7 +201,6 @@ export async function generateCode(userPrompt: string, plan: any, theme?: Design
 
 /**
  * ITERATIVE CODER AGENT
- * Refines existing code based on new instructions.
  */
 export async function updateCode(currentCode: string, userPrompt: string) {
   const model = 'gemini-3-pro-preview';
@@ -208,8 +225,7 @@ export async function updateCode(currentCode: string, userPrompt: string) {
 }
 
 /**
- * COMPILER AGENT (PREVIEW GENERATOR)
- * Injects error capturing for self-healing.
+ * COMPILER AGENT
  */
 export async function compileToHtml(code: string) {
   const model = 'gemini-3-flash-preview';
@@ -226,7 +242,7 @@ export async function compileToHtml(code: string) {
     - Configure Tailwind to use 'class' strategy.
     - Root div id="root".
     - Script type="text/babel".
-    - Mock 'lucide-react' by creating a global object 'lucide' or 'LucideReact' with simple SVG components for commonly used icons (User, Menu, Home, Settings, etc) BEFORE the main code runs.
+    - Mock 'lucide-react' by creating a global object 'lucide' or 'LucideReact' with simple SVG components for commonly used icons.
     - Output ONLY the raw HTML string.
     `, 
   });
@@ -234,7 +250,6 @@ export async function compileToHtml(code: string) {
   let html = response.text || "";
   html = html.replace(/```html/g, '').replace(/```/g, '');
 
-  // Inject Error Capturing Script
   const errorScript = `
   <script>
     window.onerror = function(msg, url, lineNo, columnNo, error) {
@@ -277,7 +292,6 @@ export async function fixCode(code: string, error: string) {
 
 /**
  * CHAT ASSISTANT
- * Uses Gemini 3 Pro with context awareness.
  */
 export async function chatWithAI(history: ChatMessage[], newMessage: string, codeContext?: string) {
   const model = 'gemini-3-pro-preview';
@@ -288,13 +302,11 @@ export async function chatWithAI(history: ChatMessage[], newMessage: string, cod
     systemInstruction += `\n\nThe user is currently working on the following code:\n\`\`\`tsx\n${codeContext}\n\`\`\``;
   }
 
-  // Convert ChatMessage[] to Content[]
   const contents = history.map(msg => ({
     role: msg.role === 'user' ? 'user' : 'model',
     parts: [{ text: msg.text }]
   }));
   
-  // Add new message
   contents.push({
     role: 'user',
     parts: [{ text: newMessage }]
