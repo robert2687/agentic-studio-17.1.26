@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trash2, Shield, Monitor, Code } from 'lucide-react';
+import { Trash2, Shield, Monitor } from 'lucide-react';
 
 interface SettingsProps {
   onClearHistory: () => void;
@@ -7,55 +7,53 @@ interface SettingsProps {
 
 const Settings: React.FC<SettingsProps> = ({ onClearHistory }) => {
   return (
-    <div className="h-full bg-ide-bg p-8 overflow-y-auto animate-in fade-in duration-500">
+    <div className="h-full bg-transparent p-8 overflow-y-auto animate-fade-in">
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-ide-text">Settings</h1>
-          <p className="text-ide-muted mt-2">Manage your workspace preferences.</p>
+          <h1 className="text-3xl font-bold text-ide-text tracking-tight">Configuration</h1>
+          <p className="text-ide-muted mt-2 text-sm">System preferences and data management.</p>
         </div>
 
         {/* Editor Preferences */}
-        <div className="bg-ide-panel border border-ide-border rounded-xl overflow-hidden">
-           <div className="px-6 py-4 border-b border-ide-border bg-ide-bg/50 flex items-center gap-3">
+        <div className="glass-panel rounded-2xl overflow-hidden">
+           <div className="px-6 py-4 border-b border-white/5 bg-white/5 flex items-center gap-3">
               <Monitor size={18} className="text-ide-accent" />
-              <h3 className="font-semibold text-ide-text">Workspace</h3>
+              <h3 className="font-semibold text-ide-text text-sm uppercase tracking-wider">Workspace Environment</h3>
            </div>
            <div className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                  <div>
-                    <h4 className="text-sm font-medium text-ide-text">Default Generator Stack</h4>
-                    <p className="text-xs text-ide-muted mt-1">New projects will default to this tech stack.</p>
+                    <h4 className="text-sm font-medium text-ide-text">Generator Stack</h4>
+                    <p className="text-xs text-ide-muted mt-1">Default tech stack for new agents.</p>
                  </div>
-                 <select disabled className="bg-ide-bg border border-ide-border rounded-lg px-3 py-1.5 text-sm text-ide-text opacity-50 cursor-not-allowed">
-                    <option>React + Tailwind (Default)</option>
-                    <option>Vue + UnoCSS</option>
-                    <option>Svelte</option>
+                 <select disabled className="bg-black/20 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-ide-text opacity-50 cursor-not-allowed">
+                    <option>React + Tailwind (Locked)</option>
                  </select>
               </div>
 
               <div className="flex items-center justify-between">
                  <div>
-                    <h4 className="text-sm font-medium text-ide-text">Live Preview Mode</h4>
-                    <p className="text-xs text-ide-muted mt-1">Render preview in sandbox iframe.</p>
+                    <h4 className="text-sm font-medium text-ide-text">Sandbox Isolation</h4>
+                    <p className="text-xs text-ide-muted mt-1">Run previews in secure iframe contexts.</p>
                  </div>
-                 <div className="w-10 h-5 bg-ide-accent rounded-full relative cursor-pointer">
-                    <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+                 <div className="w-10 h-5 bg-ide-accent rounded-full relative cursor-pointer shadow-[0_0_10px_rgba(59,130,246,0.3)]">
+                    <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full shadow-sm"></div>
                  </div>
               </div>
            </div>
         </div>
 
         {/* Data Management */}
-        <div className="bg-ide-panel border border-ide-border rounded-xl overflow-hidden">
-           <div className="px-6 py-4 border-b border-ide-border bg-ide-bg/50 flex items-center gap-3">
+        <div className="glass-panel rounded-2xl overflow-hidden">
+           <div className="px-6 py-4 border-b border-white/5 bg-white/5 flex items-center gap-3">
               <Shield size={18} className="text-red-400" />
-              <h3 className="font-semibold text-ide-text">Data & Storage</h3>
+              <h3 className="font-semibold text-ide-text text-sm uppercase tracking-wider">Persistence Layer</h3>
            </div>
            <div className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                  <div>
-                    <h4 className="text-sm font-medium text-ide-text">Clear Project History</h4>
-                    <p className="text-xs text-ide-muted mt-1">Remove all locally saved projects. This cannot be undone.</p>
+                    <h4 className="text-sm font-medium text-ide-text">Flush Project Cache</h4>
+                    <p className="text-xs text-ide-muted mt-1">Permanently remove all locally stored projects.</p>
                  </div>
                  <button 
                     onClick={() => {
@@ -63,7 +61,7 @@ const Settings: React.FC<SettingsProps> = ({ onClearHistory }) => {
                             onClearHistory();
                         }
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg hover:bg-red-500/20 hover:border-red-500/30 transition-all text-sm font-medium"
                  >
                     <Trash2 size={14} /> Clear All
                  </button>
@@ -71,8 +69,8 @@ const Settings: React.FC<SettingsProps> = ({ onClearHistory }) => {
            </div>
         </div>
 
-        <div className="text-center text-xs text-ide-muted pt-8">
-           Agentic Studio Pro v2.5.0 • Local Storage Persistence Active
+        <div className="text-center text-[10px] text-ide-muted/50 pt-8 uppercase tracking-widest font-mono">
+           Agentic Studio Pro v2.5.0 • Build 2024.05.15
         </div>
 
       </div>

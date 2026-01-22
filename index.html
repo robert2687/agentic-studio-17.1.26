@@ -30,13 +30,20 @@
               }
             },
             animation: {
-              'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'typewriter': 'blink 1s step-end infinite'
+              'pulse-fast': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'blob': 'blob 7s infinite',
+              'fade-in': 'fadeIn 0.5s ease-out forwards',
             },
             keyframes: {
-              blink: {
-                '0%, 100%': { opacity: '1' },
-                '50%': { opacity: '0' },
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
               }
             }
           }
@@ -45,60 +52,99 @@
     </script>
     <style>
       :root {
-        --background: #ffffff;
+        --background: #f8fafc;
         --foreground: #0f172a;
-        --ide-bg: #f8fafc; /* Slate-50 */
-        --ide-sidebar: #f1f5f9; /* Slate-100 */
-        --ide-panel: #ffffff;
-        --ide-border: #e2e8f0; /* Slate-200 */
+        
+        /* Light Mode Glass Vars */
+        --ide-bg: #f1f5f9;
+        --ide-sidebar: rgba(255, 255, 255, 0.7);
+        --ide-panel: rgba(255, 255, 255, 0.7);
+        --ide-border: rgba(148, 163, 184, 0.3);
+        
         --ide-accent: #3b82f6; /* Blue-500 */
         --ide-accent-hover: #2563eb; /* Blue-600 */
         --ide-text: #334155; /* Slate-700 */
-        --ide-muted: #94a3b8; /* Slate-400 */
+        --ide-muted: #64748b; /* Slate-500 */
       }
 
       .dark {
-        --background: #09090b;
-        --foreground: #e4e4e7;
-        --ide-bg: #09090b; /* Zinc-950 */
-        --ide-sidebar: #0c0a09; /* Stone-950 */
-        --ide-panel: #18181b; /* Zinc-900 */
-        --ide-border: #27272a; /* Zinc-800 */
-        --ide-accent: #3b82f6; /* Blue-500 */
-        --ide-accent-hover: #2563eb; /* Blue-600 */
-        --ide-text: #e4e4e7; /* Zinc-200 */
-        --ide-muted: #a1a1aa; /* Zinc-400 */
+        --background: #020617; /* Slate-950 */
+        --foreground: #f8fafc;
+        
+        /* Dark Mode Glass Vars */
+        --ide-bg: #020617; 
+        --ide-sidebar: rgba(15, 23, 42, 0.6); /* Slate-900 with opacity */
+        --ide-panel: rgba(30, 41, 59, 0.4); /* Slate-800 with opacity */
+        --ide-border: rgba(255, 255, 255, 0.08);
+        
+        --ide-accent: #3b82f6; 
+        --ide-accent-hover: #60a5fa;
+        --ide-text: #e2e8f0; /* Slate-200 */
+        --ide-muted: #94a3b8; /* Slate-400 */
+      }
+
+      body {
+        background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+      }
+
+      /* Glassmorphism Utilities */
+      .glass {
+        background: var(--ide-panel);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--ide-border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      .glass-sidebar {
+        background: var(--ide-sidebar);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-right: 1px solid var(--ide-border);
+      }
+      
+      .glass-panel {
+        background: var(--ide-panel);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--ide-border);
       }
 
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
+        width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
         background: transparent;
       }
       ::-webkit-scrollbar-thumb {
         background: var(--ide-border);
-        border-radius: 5px;
-        border: 2px solid var(--ide-bg);
+        border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
         background: var(--ide-muted);
       }
-      /* Hide scrollbar for cleaner look in specific areas if needed */
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
+      
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.3);
+        border-radius: 3px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(156, 163, 175, 0.5);
       }
     </style>
   <script type="importmap">
 {
   "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "@google/genai": "https://esm.sh/@google/genai@^1.36.0",
+    "react-dom/": "https://esm.sh/react-dom@^18.2.0/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.263.1",
+    "react/": "https://esm.sh/react@^18.2.0/",
+    "react": "https://esm.sh/react@^18.2.0",
+    "@google/genai": "https://esm.sh/@google/genai@^0.1.0",
     "jszip": "https://esm.sh/jszip@3.10.1"
   }
 }

@@ -29,28 +29,28 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ content, fileName, activeAgent,
   };
 
   return (
-    <div className="flex flex-col h-full bg-ide-bg font-mono text-sm relative group border-r border-ide-border">
+    <div className="flex flex-col h-full bg-[#0c0a09]/80 backdrop-blur-sm font-mono text-sm relative group border-r border-ide-border">
       {/* Editor Toolbar */}
-      <div className="flex items-center justify-between bg-ide-panel border-b border-ide-border pr-2">
+      <div className="flex items-center justify-between bg-black/20 border-b border-white/5 pr-3">
         <div className="flex">
           {fileName ? (
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-ide-bg border-r border-t-2 border-t-ide-accent border-r-ide-border text-ide-text">
-              <span className="text-ide-accent"><FileCode size={14}/></span>
-              <span className="font-medium text-xs">{fileName}</span>
-              {activeAgent === 'coder' && <span className="w-1.5 h-1.5 rounded-full bg-ide-accent animate-pulse ml-2"/>}
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/5 border-t-2 border-t-blue-500 border-r border-r-white/5 text-ide-text">
+              <span className="text-blue-400"><FileCode size={14}/></span>
+              <span className="font-medium text-xs tracking-tight">{fileName}</span>
+              {activeAgent === 'coder' && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse ml-2 shadow-[0_0_8px_rgba(59,130,246,0.5)]"/>}
             </div>
           ) : (
-             <div className="px-4 py-2.5 text-ide-muted italic text-xs">No file open</div>
+             <div className="px-5 py-3 text-ide-muted italic text-xs">No file open</div>
           )}
         </div>
         
         {fileName && (
-          <div className="flex items-center gap-3">
-             <span className="text-[10px] uppercase text-ide-muted font-bold tracking-wider">{getLanguage(fileName)}</span>
-             <div className="h-4 w-[1px] bg-ide-border"></div>
+          <div className="flex items-center gap-4">
+             <span className="text-[10px] uppercase text-ide-muted/70 font-bold tracking-wider">{getLanguage(fileName)}</span>
+             <div className="h-3 w-[1px] bg-white/10"></div>
              <button 
                 onClick={handleCopy}
-                className="text-ide-muted hover:text-ide-text p-1.5 rounded-md hover:bg-ide-bg transition-colors"
+                className="text-ide-muted hover:text-ide-text p-1.5 rounded hover:bg-white/5 transition-colors"
                 title="Copy content"
              >
                 {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
@@ -60,11 +60,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ content, fileName, activeAgent,
       </div>
 
       {/* Editor Body */}
-      <div className="flex-1 relative overflow-hidden flex bg-[#0c0a09]">
+      <div className="flex-1 relative overflow-hidden flex">
         {/* Line Numbers */}
-        <div className="w-12 flex-shrink-0 bg-ide-bg border-r border-ide-border text-ide-muted text-right pr-3 pt-4 select-none h-full overflow-hidden opacity-50">
+        <div className="w-14 flex-shrink-0 bg-black/20 border-r border-white/5 text-ide-muted/40 text-right pr-4 pt-4 select-none h-full overflow-hidden text-xs">
           {lines.map(line => (
-            <div key={line} className="h-6 leading-6 text-xs">{line}</div>
+            <div key={line} className="h-6 leading-6">{line}</div>
           ))}
         </div>
 
@@ -74,7 +74,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ content, fileName, activeAgent,
              <div className="absolute inset-0 overflow-auto custom-scrollbar">
                 {/* Visual Layer (Syntax Highlight - Simplified here) */}
                 <div 
-                  className="absolute inset-0 p-4 pointer-events-none whitespace-pre font-mono text-sm leading-6 text-transparent z-10"
+                  className="absolute inset-0 p-4 pl-6 pointer-events-none whitespace-pre font-mono text-sm leading-6 text-transparent z-10"
                   aria-hidden="true"
                 >
                     {content}
@@ -82,7 +82,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ content, fileName, activeAgent,
 
                 {/* Input Layer */}
                 <textarea 
-                   className="absolute inset-0 w-full h-full bg-transparent p-4 font-mono text-sm leading-6 text-slate-300 outline-none resize-none z-0 focus:bg-white/5 transition-colors tab-4 selection:bg-blue-500/30"
+                   className="absolute inset-0 w-full h-full bg-transparent p-4 pl-6 font-mono text-sm leading-6 text-slate-300 outline-none resize-none z-0 focus:bg-transparent transition-colors tab-4 selection:bg-blue-500/30"
                    value={content}
                    onChange={(e) => onChange && onChange(e.target.value)}
                    spellCheck={false}
@@ -93,9 +93,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ content, fileName, activeAgent,
              </div>
            ) : (
              <div className="flex items-center justify-center h-full text-ide-muted">
-               <div className="text-center opacity-50">
-                 <div className="mb-2 font-medium">Agentic Studio Pro</div>
-                 <div className="text-xs">Select a file to edit</div>
+               <div className="text-center opacity-40">
+                 <div className="text-xs uppercase tracking-widest mb-1">Agentic Studio Pro</div>
+                 <div className="text-[10px]">Select a file to begin editing</div>
                </div>
              </div>
            )}

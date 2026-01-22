@@ -270,11 +270,11 @@ const App: React.FC = () => {
         case 'workspace':
         case 'generating':
             return (
-                <div className="flex-1 flex overflow-hidden relative">
+                <div className="flex-1 flex overflow-hidden relative glass-panel m-2 rounded-xl border border-white/5 shadow-2xl">
                     {/* Sidebar */}
-                    <div style={{ width: sidebarWidth }} className="flex-shrink-0 flex flex-col bg-ide-sidebar border-r border-ide-border transition-none">
-                    <div className="h-9 border-b border-ide-border flex items-center px-3 gap-2 text-xs font-medium text-ide-muted uppercase tracking-wider">
-                        <SidebarIcon size={12} /> Explorer
+                    <div style={{ width: sidebarWidth }} className="flex-shrink-0 flex flex-col glass-sidebar border-r border-white/5 transition-none">
+                    <div className="h-10 border-b border-white/5 flex items-center px-4 gap-2 text-[10px] font-bold text-ide-muted uppercase tracking-wider">
+                        <SidebarIcon size={12} /> Project Files
                     </div>
                     <FileExplorer files={state.files} activeFile={state.currentFile} />
                     </div>
@@ -284,11 +284,11 @@ const App: React.FC = () => {
                         className="w-1 cursor-col-resize hover:bg-blue-500/50 transition-colors z-10 flex items-center justify-center group"
                         onMouseDown={startResizing('sidebar')}
                     >
-                        <div className="w-0.5 h-8 bg-ide-border group-hover:bg-blue-400 rounded-full transition-colors" />
+                        <div className="w-0.5 h-8 bg-white/10 group-hover:bg-blue-400 rounded-full transition-colors" />
                     </div>
 
                     {/* Center: Editor & Terminal */}
-                    <div className="flex-1 flex flex-col min-w-0 bg-ide-bg">
+                    <div className="flex-1 flex flex-col min-w-0 bg-[#0c0a09]/80 backdrop-blur-sm">
                     <div className="flex-1 flex flex-col relative overflow-hidden">
                         <ErrorBoundary fallback={<div className="p-4 text-red-400">Editor Error</div>}>
                         <CodeEditor 
@@ -301,28 +301,28 @@ const App: React.FC = () => {
                         
                         {/* Floating Agent Status Toast */}
                         {state.status === 'running' && (
-                        <div className="absolute top-4 right-4 bg-ide-panel/90 backdrop-blur border border-ide-border p-3 rounded-lg shadow-2xl flex items-center gap-3 animate-in slide-in-from-top-5 z-20">
+                        <div className="absolute top-16 right-6 bg-black/60 backdrop-blur-md border border-white/10 p-3 rounded-lg shadow-2xl flex items-center gap-3 animate-fade-in z-20">
                             <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                             </span>
-                            <span className="text-xs text-ide-text font-medium">
+                            <span className="text-xs text-white font-medium tracking-wide">
                                 {state.activeAgent === 'patcher' ? 'Self-Healing Active' : 'Swarm Intelligence Active'}
                             </span>
-                            <Zap size={14} className="text-yellow-500 fill-yellow-500/20" />
+                            <Zap size={14} className="text-blue-400 fill-blue-500/20" />
                         </div>
                         )}
                     </div>
 
                     {/* Terminal Resizer */}
                     <div 
-                        className="h-1 cursor-row-resize hover:bg-blue-500/50 transition-colors z-10 flex items-center justify-center group bg-ide-border/50"
+                        className="h-1 cursor-row-resize hover:bg-blue-500/50 transition-colors z-10 flex items-center justify-center group bg-white/5"
                         onMouseDown={startResizing('terminal')}
                     >
-                        <div className="h-0.5 w-16 bg-ide-border group-hover:bg-blue-400 rounded-full transition-colors" />
+                        <div className="h-0.5 w-16 bg-white/10 group-hover:bg-blue-400 rounded-full transition-colors" />
                     </div>
 
-                    <div style={{ height: terminalHeight }} className="flex-shrink-0 bg-ide-panel flex flex-col transition-none">
+                    <div style={{ height: terminalHeight }} className="flex-shrink-0 flex flex-col transition-none">
                         <Terminal 
                             logs={state.logs} 
                             messages={state.messages}
@@ -334,19 +334,19 @@ const App: React.FC = () => {
 
                     {/* Preview Resizer */}
                     <div 
-                        className="w-1 cursor-col-resize hover:bg-blue-500/50 transition-colors z-10 flex items-center justify-center group bg-ide-bg border-l border-ide-border"
+                        className="w-1 cursor-col-resize hover:bg-blue-500/50 transition-colors z-10 flex items-center justify-center group bg-black/20 border-l border-white/5"
                         onMouseDown={startResizing('preview')}
                     >
-                        <div className="w-0.5 h-8 bg-ide-border group-hover:bg-blue-400 rounded-full transition-colors" />
+                        <div className="w-0.5 h-8 bg-white/10 group-hover:bg-blue-400 rounded-full transition-colors" />
                     </div>
 
                     {/* Right: Preview */}
-                    <div style={{ width: previewWidth }} className="flex-shrink-0 bg-ide-bg flex flex-col transition-none">
-                        <div className="h-9 border-b border-ide-border flex items-center px-3 gap-2 text-xs font-medium text-ide-muted uppercase tracking-wider bg-ide-panel">
+                    <div style={{ width: previewWidth }} className="flex-shrink-0 bg-white flex flex-col transition-none">
+                        <div className="h-10 border-b border-slate-200 flex items-center px-4 gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-50">
                             <MonitorPlay size={12} /> Live Preview
                         </div>
-                        <div className="flex-1 p-4 bg-zinc-950/50">
-                            <ErrorBoundary fallback={<div className="text-white p-4">Preview Crash</div>}>
+                        <div className="flex-1 bg-white relative">
+                            <ErrorBoundary fallback={<div className="text-slate-500 p-4">Preview Crash</div>}>
                             <Preview 
                                 url={state.previewUrl} 
                                 isReady={state.status === 'completed'} 
@@ -364,7 +364,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-ide-bg text-ide-text overflow-hidden font-sans selection:bg-ide-accent selection:text-white transition-colors duration-300">
+    <div className="flex h-screen bg-transparent text-foreground overflow-hidden font-sans selection:bg-blue-500/30 selection:text-white transition-colors duration-300">
       
       {/* Global Sidebar (Navigation) */}
       <GlobalSidebar 
@@ -374,17 +374,17 @@ const App: React.FC = () => {
         onToggleTheme={toggleTheme}
       />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative z-10">
         {/* Workspace Header (Only visible in Workspace mode) */}
         {state.view === 'workspace' && (
-            <header className="h-14 bg-ide-panel border-b border-ide-border flex items-center justify-between px-4 flex-shrink-0 z-40 transition-colors duration-300">
+            <header className="h-16 glass border-b border-white/5 flex items-center justify-between px-6 flex-shrink-0 z-40 transition-colors duration-300 mx-2 mt-2 rounded-xl mb-0">
                 <div className="flex items-center gap-3">
-                    <span className="font-bold tracking-tight text-ide-text text-sm">{state.definition?.name || 'Untitled Project'}</span>
-                    {state.status === 'running' && <span className="text-xs text-ide-muted animate-pulse">Building...</span>}
+                    <span className="font-bold tracking-tight text-white text-sm">{state.definition?.name || 'Untitled Project'}</span>
+                    {state.status === 'running' && <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 animate-pulse uppercase tracking-wider">Building</span>}
                 </div>
                 
                 <div className="flex-1 max-w-xl mx-8 relative group">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none transition-colors group-focus-within:text-ide-accent text-ide-muted">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-400 text-ide-muted">
                     <Sparkles size={16} />
                 </div>
                 <input 
@@ -392,14 +392,14 @@ const App: React.FC = () => {
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && startRefinement()}
-                    className="w-full bg-ide-bg border border-ide-border rounded-lg pl-10 pr-24 py-2 text-sm focus:outline-none focus:border-ide-accent focus:bg-ide-panel transition-all text-ide-text placeholder:text-ide-muted"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl pl-10 pr-24 py-2.5 text-sm focus:outline-none focus:border-blue-500/50 focus:bg-black/40 transition-all text-ide-text placeholder:text-ide-muted"
                     placeholder="Describe changes to update the app..."
                     disabled={state.status === 'running'}
                 />
                 <button 
                     onClick={startRefinement}
                     disabled={state.status === 'running'}
-                    className="absolute right-1.5 top-1.5 bottom-1.5 bg-ide-accent hover:bg-ide-accentHover text-white px-3 text-xs font-medium rounded-md flex items-center gap-2 transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed shadow-sm"
+                    className="absolute right-1.5 top-1.5 bottom-1.5 bg-white/10 hover:bg-white/20 text-white px-3 text-xs font-medium rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {state.status === 'running' ? 'Working...' : 'Update'}
                     <Send size={12} />
@@ -411,14 +411,14 @@ const App: React.FC = () => {
                     <>
                     <button 
                         onClick={handleManualCompile}
-                        className="bg-green-600/20 hover:bg-green-600/30 text-green-600 dark:text-green-400 border border-green-600/30 px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 transition-colors"
+                        className="bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors"
                         title="Run manual code changes"
                     >
                         <Play size={12} fill="currentColor" /> Run
                     </button>
                     <button 
                         onClick={handleExport}
-                        className="bg-ide-panel hover:bg-ide-border text-ide-text border border-ide-border px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 transition-colors"
+                        className="bg-white/5 hover:bg-white/10 text-ide-text border border-white/10 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors"
                         title="Download Project ZIP"
                     >
                         <Download size={14} /> Export
@@ -431,7 +431,7 @@ const App: React.FC = () => {
         )}
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-hidden relative bg-ide-bg">
+        <div className="flex-1 overflow-hidden relative">
             <ErrorBoundary>
                 {renderView()}
             </ErrorBoundary>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { AppDefinition, AppType, Platform, ThemeVibe, NavStyle, Entity, Page } from '../types';
-import { Layout, Globe, Code, FileText, Check, ArrowRight, ArrowLeft, Palette, Grid, Sidebar as SidebarIcon, LayoutTemplate, Database, Plus, Trash2, Layers } from 'lucide-react';
+import { AppDefinition, Page, Entity, ThemeVibe } from '../types';
+import { Layout, Globe, FileText, Check, ArrowRight, ArrowLeft, Palette, Grid, Sidebar as SidebarIcon, LayoutTemplate, Database, Plus, Trash2, Layers } from 'lucide-react';
 
 interface WizardProps {
   onComplete: (def: AppDefinition) => void;
@@ -10,7 +10,7 @@ interface WizardProps {
 const Wizard: React.FC<WizardProps> = ({ onComplete, onCancel }) => {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<Partial<AppDefinition>>({
-    name: 'My Awesome App',
+    name: 'Untitled Project',
     type: 'Dashboard',
     platform: 'Web SPA',
     tech: 'React + Tailwind',
@@ -25,7 +25,6 @@ const Wizard: React.FC<WizardProps> = ({ onComplete, onCancel }) => {
     }
   });
 
-  // Helper State for Step 2 Inputs
   const [newEntity, setNewEntity] = useState({ name: '', fields: '' });
   const [newPage, setNewPage] = useState({ name: '', type: 'dashboard' as Page['type'] });
 
@@ -73,98 +72,94 @@ const Wizard: React.FC<WizardProps> = ({ onComplete, onCancel }) => {
   const SelectCard = ({ selected, onClick, title, desc, icon: Icon }: any) => (
     <div 
       onClick={onClick}
-      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 flex items-start gap-4 group ${
         selected 
-          ? 'border-ide-accent bg-ide-accent/5' 
-          : 'border-ide-border bg-ide-panel hover:border-ide-muted'
+          ? 'border-ide-accent bg-blue-500/10 shadow-[0_0_15px_rgba(59,130,246,0.15)]' 
+          : 'border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10'
       }`}
     >
-      <div className="flex items-start gap-4">
-        <div className={`p-2 rounded-lg ${selected ? 'bg-ide-accent text-white' : 'bg-ide-bg text-ide-muted'}`}>
-          <Icon size={20} />
-        </div>
-        <div>
-          <h4 className={`font-semibold ${selected ? 'text-ide-text' : 'text-ide-text'}`}>{title}</h4>
-          <p className="text-xs text-ide-muted mt-1">{desc}</p>
-        </div>
-        {selected && <div className="ml-auto text-ide-accent"><Check size={20} /></div>}
+      <div className={`p-2.5 rounded-lg transition-colors ${selected ? 'bg-blue-500 text-white' : 'bg-white/5 text-ide-muted group-hover:text-ide-text'}`}>
+        <Icon size={20} />
       </div>
+      <div className="flex-1">
+        <h4 className={`font-medium text-sm ${selected ? 'text-white' : 'text-ide-text'}`}>{title}</h4>
+        <p className="text-xs text-ide-muted mt-1 leading-relaxed">{desc}</p>
+      </div>
+      {selected && <div className="text-ide-accent animate-in fade-in zoom-in duration-200"><Check size={18} /></div>}
     </div>
   );
 
   return (
-    <div className="h-full flex items-center justify-center bg-ide-bg p-6 animate-in fade-in duration-500">
-      <div className="max-w-5xl w-full bg-ide-sidebar border border-ide-border rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[800px]">
-        {/* Header */}
-        <div className="px-8 py-6 border-b border-ide-border flex items-center justify-between bg-ide-panel">
+    <div className="h-full flex items-center justify-center p-6 animate-fade-in">
+      <div className="max-w-5xl w-full glass rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[850px] relative">
+        {/* Progress Header */}
+        <div className="px-8 py-6 border-b border-ide-border flex items-center justify-between bg-black/20 backdrop-blur-xl">
           <div>
-             <h2 className="text-xl font-bold text-ide-text">Create New Application</h2>
-             <p className="text-sm text-ide-muted">Step {step} of 4: {
-                step === 1 ? 'Project Basics' : 
-                step === 2 ? 'Structure & Data' : 
-                step === 3 ? 'Design System' : 'Review & Generate'
-             }</p>
+             <h2 className="text-lg font-semibold text-ide-text tracking-tight">Project Initialization</h2>
+             <p className="text-xs text-ide-muted mt-1 font-mono">STEP 0{step} / 04</p>
           </div>
           <div className="flex gap-2">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className={`w-12 h-1.5 rounded-full transition-all duration-300 ${i <= step ? 'bg-ide-accent' : 'bg-ide-border'}`} />
+              <div key={i} className={`h-1 w-12 rounded-full transition-all duration-500 ${i <= step ? 'bg-ide-accent shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'bg-white/10'}`} />
             ))}
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 p-8 overflow-y-auto bg-ide-bg">
+        {/* Content Area */}
+        <div className="flex-1 p-8 overflow-y-auto custom-scrollbar">
           {step === 1 && (
-            <div className="space-y-6 animate-in slide-in-from-right-8 duration-300 max-w-3xl mx-auto">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-ide-text">Project Name</label>
+            <div className="space-y-8 max-w-3xl mx-auto animate-fade-in">
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-ide-muted uppercase tracking-wider">Project Name</label>
                 <input 
                   type="text" 
                   value={data.name}
                   onChange={(e) => setData({ ...data, name: e.target.value })}
-                  className="w-full bg-ide-panel border border-ide-border rounded-lg px-4 py-3 text-ide-text focus:outline-none focus:border-ide-accent transition-all"
-                  placeholder="e.g. CryptoDash 2025"
+                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-4 text-lg text-ide-text focus:outline-none focus:border-ide-accent/50 focus:ring-1 focus:ring-ide-accent/50 transition-all placeholder:text-white/10"
+                  placeholder="e.g. Nexus Dashboard"
+                  autoFocus
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-ide-text">Application Type</label>
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-ide-muted uppercase tracking-wider">Archetype</label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <SelectCard title="Dashboard" desc="Analytics, tables, and data visualization." icon={Layout} selected={data.type === 'Dashboard'} onClick={() => setData({ ...data, type: 'Dashboard' })} />
-                  <SelectCard title="Landing Page" desc="Marketing sites, portfolios, products." icon={Globe} selected={data.type === 'Landing Page'} onClick={() => setData({ ...data, type: 'Landing Page' })} />
-                  <SelectCard title="CRUD App" desc="Data management, forms, listings." icon={FileText} selected={data.type === 'CRUD App'} onClick={() => setData({ ...data, type: 'CRUD App' })} />
-                  <SelectCard title="Chat Interface" desc="AI assistants, support bots, messaging." icon={LayoutTemplate} selected={data.type === 'Chat UI'} onClick={() => setData({ ...data, type: 'Chat UI' })} />
+                  <SelectCard title="Analytical Dashboard" desc="Data visualization, heavy grids, charts." icon={Layout} selected={data.type === 'Dashboard'} onClick={() => setData({ ...data, type: 'Dashboard' })} />
+                  <SelectCard title="Landing Experience" desc="Marketing, hero sections, feature grids." icon={Globe} selected={data.type === 'Landing Page'} onClick={() => setData({ ...data, type: 'Landing Page' })} />
+                  <SelectCard title="CRUD System" desc="Resource management, tables, forms." icon={FileText} selected={data.type === 'CRUD App'} onClick={() => setData({ ...data, type: 'CRUD App' })} />
+                  <SelectCard title="Conversational UI" desc="Chat bots, messaging interfaces." icon={LayoutTemplate} selected={data.type === 'Chat UI'} onClick={() => setData({ ...data, type: 'Chat UI' })} />
                 </div>
               </div>
             </div>
           )}
 
           {step === 2 && (
-            <div className="animate-in slide-in-from-right-8 duration-300 grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column: Requirements & Features */}
-              <div className="space-y-6">
-                <div>
-                   <h3 className="text-lg font-medium text-ide-text mb-2">Requirements</h3>
-                   <p className="text-ide-muted text-sm mb-3">Describe functionality in natural language.</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+              <div className="space-y-8">
+                <div className="space-y-3">
+                   <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-ide-muted uppercase tracking-wider">Core Logic</label>
+                      <span className="text-[10px] text-ide-accent bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">Natural Language</span>
+                   </div>
                    <textarea 
                       value={data.description || ''}
                       onChange={(e) => setData({ ...data, description: e.target.value })}
-                      className="w-full h-32 bg-ide-panel border border-ide-border rounded-xl p-4 text-ide-text focus:outline-none focus:border-ide-accent transition-all resize-none"
-                      placeholder="e.g., Users can see a list of top 10 cryptocurrencies. Clicking one opens a detail modal with a line chart..."
+                      className="w-full h-48 bg-black/20 border border-white/10 rounded-xl p-5 text-ide-text focus:outline-none focus:border-ide-accent/50 focus:ring-1 focus:ring-ide-accent/50 transition-all resize-none leading-relaxed"
+                      placeholder="Describe the application flow, key interactions, and user goals..."
                    />
                 </div>
 
-                <div>
-                  <h3 className="text-lg font-medium text-ide-text mb-3">Features</h3>
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-ide-muted uppercase tracking-wider">Capabilities</label>
                   <div className="flex flex-wrap gap-2">
-                    {['Responsive Design', 'Dark Mode', 'Auth UI', 'Charts', 'Data Tables', 'Sidebar', 'Modals', 'Forms', 'User Profile', 'Settings'].map(feat => (
+                    {['Responsive Layout', 'Dark Mode', 'Authentication', 'Charts', 'Data Grid', 'Sidebar Nav', 'Modals', 'Forms', 'Notifications', 'Settings Panel'].map(feat => (
                       <button
                         key={feat}
                         onClick={() => toggleFeature(feat)}
-                        className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
                           data.features?.includes(feat)
-                            ? 'bg-ide-accent/10 border-ide-accent text-ide-accent'
-                            : 'bg-ide-panel border-ide-border text-ide-muted hover:border-ide-text'
+                            ? 'bg-blue-500/20 border-blue-500/50 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]'
+                            : 'bg-white/5 border-white/10 text-ide-muted hover:border-white/20 hover:text-ide-text'
                         }`}
                       >
                         {feat}
@@ -174,84 +169,83 @@ const Wizard: React.FC<WizardProps> = ({ onComplete, onCancel }) => {
                 </div>
               </div>
 
-              {/* Right Column: Structured Data & Pages */}
               <div className="space-y-6">
-                 {/* Entities Builder */}
-                 <div className="bg-ide-panel border border-ide-border rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-4">
-                       <Database size={18} className="text-purple-400" />
-                       <h3 className="font-medium text-ide-text">Data Entities</h3>
+                 {/* Entities */}
+                 <div className="glass-panel p-5 rounded-xl">
+                    <div className="flex items-center gap-2 mb-4 text-purple-400">
+                       <Database size={16} />
+                       <h3 className="text-sm font-bold uppercase tracking-wider">Data Schema</h3>
                     </div>
                     
-                    <div className="space-y-3 mb-4">
+                    <div className="space-y-2 mb-4 min-h-[100px]">
                       {data.entities?.map(entity => (
-                        <div key={entity.id} className="flex items-center justify-between bg-ide-bg p-2 rounded border border-ide-border">
+                        <div key={entity.id} className="flex items-center justify-between bg-black/20 px-3 py-2 rounded-lg border border-white/5 group">
                            <div>
-                              <div className="font-bold text-sm text-ide-text">{entity.name}</div>
-                              <div className="text-xs text-ide-muted">{entity.fields}</div>
+                              <div className="text-sm font-medium text-ide-text">{entity.name}</div>
+                              <div className="text-[10px] text-ide-muted font-mono">{entity.fields}</div>
                            </div>
-                           <button onClick={() => removeEntity(entity.id)} className="text-ide-muted hover:text-red-400 p-1"><Trash2 size={14}/></button>
+                           <button onClick={() => removeEntity(entity.id)} className="text-ide-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={14}/></button>
                         </div>
                       ))}
-                      {data.entities?.length === 0 && <div className="text-xs text-ide-muted italic text-center py-2">No entities defined.</div>}
+                      {data.entities?.length === 0 && <div className="text-xs text-ide-muted/50 italic text-center py-8">No entities defined</div>}
                     </div>
 
                     <div className="flex gap-2">
                        <input 
-                         placeholder="Name (e.g. Product)" 
-                         className="flex-1 bg-ide-bg border border-ide-border rounded px-2 py-1.5 text-sm focus:outline-none focus:border-ide-accent text-ide-text"
+                         placeholder="Entity Name" 
+                         className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ide-accent text-ide-text placeholder:text-white/20"
                          value={newEntity.name}
                          onChange={e => setNewEntity({...newEntity, name: e.target.value})}
                        />
                        <input 
-                         placeholder="Fields (e.g. id, price)" 
-                         className="flex-[2] bg-ide-bg border border-ide-border rounded px-2 py-1.5 text-sm focus:outline-none focus:border-ide-accent text-ide-text"
+                         placeholder="fields: id, name..." 
+                         className="flex-[2] bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ide-accent text-ide-text placeholder:text-white/20"
                          value={newEntity.fields}
                          onChange={e => setNewEntity({...newEntity, fields: e.target.value})}
                        />
-                       <button onClick={addEntity} className="bg-ide-accent hover:bg-ide-accentHover text-white p-1.5 rounded"><Plus size={16}/></button>
+                       <button onClick={addEntity} className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg border border-white/10"><Plus size={16}/></button>
                     </div>
                  </div>
 
-                 {/* Pages Builder */}
-                 <div className="bg-ide-panel border border-ide-border rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-4">
-                       <Layers size={18} className="text-orange-400" />
-                       <h3 className="font-medium text-ide-text">Site Map</h3>
+                 {/* Pages */}
+                 <div className="glass-panel p-5 rounded-xl">
+                    <div className="flex items-center gap-2 mb-4 text-orange-400">
+                       <Layers size={16} />
+                       <h3 className="text-sm font-bold uppercase tracking-wider">Route Map</h3>
                     </div>
                     
-                    <div className="space-y-3 mb-4">
+                    <div className="space-y-2 mb-4 min-h-[100px]">
                       {data.pages?.map(page => (
-                        <div key={page.id} className="flex items-center justify-between bg-ide-bg p-2 rounded border border-ide-border">
-                           <div className="flex items-center gap-2">
-                              <span className="text-xs bg-ide-border px-1.5 rounded text-ide-text">{page.type}</span>
-                              <span className="font-medium text-sm text-ide-text">{page.name}</span>
+                        <div key={page.id} className="flex items-center justify-between bg-black/20 px-3 py-2 rounded-lg border border-white/5 group">
+                           <div className="flex items-center gap-3">
+                              <span className="text-[10px] bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-ide-muted uppercase">{page.type}</span>
+                              <span className="text-sm font-medium text-ide-text">{page.name}</span>
                            </div>
-                           <button onClick={() => removePage(page.id)} className="text-ide-muted hover:text-red-400 p-1"><Trash2 size={14}/></button>
+                           <button onClick={() => removePage(page.id)} className="text-ide-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={14}/></button>
                         </div>
                       ))}
-                      {data.pages?.length === 0 && <div className="text-xs text-ide-muted italic text-center py-2">No pages defined.</div>}
+                      {data.pages?.length === 0 && <div className="text-xs text-ide-muted/50 italic text-center py-8">No pages defined</div>}
                     </div>
 
                     <div className="flex gap-2">
                        <input 
-                         placeholder="Page Name (e.g. Home)" 
-                         className="flex-1 bg-ide-bg border border-ide-border rounded px-2 py-1.5 text-sm focus:outline-none focus:border-ide-accent text-ide-text"
+                         placeholder="Page Name" 
+                         className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ide-accent text-ide-text placeholder:text-white/20"
                          value={newPage.name}
                          onChange={e => setNewPage({...newPage, name: e.target.value})}
                        />
                        <select 
-                          className="bg-ide-bg border border-ide-border rounded px-2 py-1.5 text-sm focus:outline-none focus:border-ide-accent text-ide-text"
+                          className="bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ide-accent text-ide-text"
                           value={newPage.type}
                           onChange={e => setNewPage({...newPage, type: e.target.value as any})}
                        >
                           <option value="dashboard">Dashboard</option>
-                          <option value="list">List View</option>
-                          <option value="detail">Detail View</option>
+                          <option value="list">List</option>
+                          <option value="detail">Detail</option>
                           <option value="form">Form</option>
                           <option value="landing">Landing</option>
                        </select>
-                       <button onClick={addPage} className="bg-ide-accent hover:bg-ide-accentHover text-white p-1.5 rounded"><Plus size={16}/></button>
+                       <button onClick={addPage} className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg border border-white/10"><Plus size={16}/></button>
                     </div>
                  </div>
               </div>
@@ -259,20 +253,18 @@ const Wizard: React.FC<WizardProps> = ({ onComplete, onCancel }) => {
           )}
 
           {step === 3 && (
-            <div className="space-y-8 animate-in slide-in-from-right-8 duration-300 max-w-3xl mx-auto">
-              
-              {/* Vibe Selection */}
+            <div className="space-y-10 animate-fade-in max-w-4xl mx-auto">
               <div>
-                <h3 className="text-lg font-medium text-ide-text mb-4">Visual Theme</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <h3 className="text-sm font-medium text-ide-muted uppercase tracking-wider mb-4">Aesthetic Theme</h3>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                   {['Modern', 'Corporate', 'Playful', 'Brutalist', 'Minimalist'].map((vibe) => (
                     <button
                        key={vibe}
                        onClick={() => setData({ ...data, design: { ...data.design!, theme: vibe as ThemeVibe } })}
-                       className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                       className={`p-4 rounded-xl text-sm font-medium transition-all border ${
                           data.design?.theme === vibe 
-                             ? 'border-ide-accent bg-ide-accent/10 text-ide-accent' 
-                             : 'border-ide-border bg-ide-panel text-ide-muted hover:border-ide-text'
+                             ? 'border-ide-accent bg-blue-500/20 text-blue-400 shadow-lg shadow-blue-500/10' 
+                             : 'border-white/5 bg-white/5 text-ide-muted hover:bg-white/10 hover:text-ide-text'
                        }`}
                     >
                        {vibe}
@@ -281,116 +273,116 @@ const Wizard: React.FC<WizardProps> = ({ onComplete, onCancel }) => {
                 </div>
               </div>
 
-              {/* Navigation Style */}
-              <div>
-                <h3 className="text-lg font-medium text-ide-text mb-4">Navigation Layout</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                   <SelectCard 
-                      title="Sidebar" 
-                      desc="Vertical side navigation" 
-                      icon={SidebarIcon} 
-                      selected={data.design?.navStyle === 'Sidebar'} 
-                      onClick={() => setData({ ...data, design: { ...data.design!, navStyle: 'Sidebar' } })} 
-                   />
-                   <SelectCard 
-                      title="Top Bar" 
-                      desc="Horizontal header menu" 
-                      icon={Layout} 
-                      selected={data.design?.navStyle === 'TopBar'} 
-                      onClick={() => setData({ ...data, design: { ...data.design!, navStyle: 'TopBar' } })} 
-                   />
-                   <SelectCard 
-                      title="Minimal" 
-                      desc="Hidden/Drawer menu" 
-                      icon={Grid} 
-                      selected={data.design?.navStyle === 'Minimal'} 
-                      onClick={() => setData({ ...data, design: { ...data.design!, navStyle: 'Minimal' } })} 
-                   />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div>
+                    <h3 className="text-sm font-medium text-ide-muted uppercase tracking-wider mb-4">Navigation Structure</h3>
+                    <div className="space-y-3">
+                    <SelectCard 
+                        title="Sidebar" 
+                        desc="Vertical rail with expandable menus." 
+                        icon={SidebarIcon} 
+                        selected={data.design?.navStyle === 'Sidebar'} 
+                        onClick={() => setData({ ...data, design: { ...data.design!, navStyle: 'Sidebar' } })} 
+                    />
+                    <SelectCard 
+                        title="Top Bar" 
+                        desc="Horizontal header with dropdowns." 
+                        icon={Layout} 
+                        selected={data.design?.navStyle === 'TopBar'} 
+                        onClick={() => setData({ ...data, design: { ...data.design!, navStyle: 'TopBar' } })} 
+                    />
+                    <SelectCard 
+                        title="Minimal" 
+                        desc="Hamburger menu / off-canvas drawer." 
+                        icon={Grid} 
+                        selected={data.design?.navStyle === 'Minimal'} 
+                        onClick={() => setData({ ...data, design: { ...data.design!, navStyle: 'Minimal' } })} 
+                    />
+                    </div>
+                </div>
+
+                <div>
+                    <h3 className="text-sm font-medium text-ide-muted uppercase tracking-wider mb-4">Primary Brand Token</h3>
+                    <div className="grid grid-cols-4 gap-4">
+                        {['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#64748b'].map(color => (
+                        <button
+                            key={color}
+                            onClick={() => setData({ ...data, design: { ...data.design!, primaryColor: color } })}
+                            className={`aspect-square rounded-xl border transition-all hover:scale-105 flex items-center justify-center ${data.design?.primaryColor === color ? 'border-white ring-2 ring-white/20' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                            style={{ backgroundColor: color }}
+                        >
+                            {data.design?.primaryColor === color && <Check className="text-white drop-shadow-md" size={20} />}
+                        </button>
+                        ))}
+                    </div>
                 </div>
               </div>
-
-               {/* Color Picker (Simple) */}
-               <div>
-                 <h3 className="text-lg font-medium text-ide-text mb-4">Primary Brand Color</h3>
-                 <div className="flex gap-4">
-                    {['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'].map(color => (
-                       <button
-                          key={color}
-                          onClick={() => setData({ ...data, design: { ...data.design!, primaryColor: color } })}
-                          className={`w-10 h-10 rounded-full border-2 transition-transform hover:scale-110 ${data.design?.primaryColor === color ? 'border-ide-text ring-2 ring-offset-2 ring-ide-bg' : 'border-transparent'}`}
-                          style={{ backgroundColor: color }}
-                       />
-                    ))}
-                 </div>
-               </div>
-
             </div>
           )}
 
           {step === 4 && (
-            <div className="space-y-6 animate-in slide-in-from-right-8 duration-300 max-w-3xl mx-auto">
-               <div className="bg-ide-panel border border-ide-border rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-ide-text mb-4 border-b border-ide-border pb-2">Project Summary</h3>
+            <div className="max-w-3xl mx-auto animate-fade-in space-y-6">
+               <div className="glass-panel p-8 rounded-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-32 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none -mt-10 -mr-10"></div>
                   
-                  <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                  <h3 className="text-xl font-bold text-ide-text mb-6">Execution Plan</h3>
+                  
+                  <div className="grid grid-cols-2 gap-y-8 gap-x-8 mb-8">
                      <div>
-                        <span className="text-xs uppercase font-bold text-ide-muted">Project Name</span>
-                        <p className="text-ide-text font-medium">{data.name}</p>
+                        <span className="text-[10px] uppercase font-bold text-ide-muted tracking-widest">Target</span>
+                        <p className="text-ide-text text-lg font-medium mt-1">{data.name}</p>
                      </div>
                      <div>
-                        <span className="text-xs uppercase font-bold text-ide-muted">App Type</span>
-                        <p className="text-ide-text font-medium">{data.type}</p>
+                        <span className="text-[10px] uppercase font-bold text-ide-muted tracking-widest">Architecture</span>
+                        <p className="text-ide-text text-lg font-medium mt-1">{data.type} / {data.platform}</p>
                      </div>
                      <div>
-                        <span className="text-xs uppercase font-bold text-ide-muted">Structure</span>
-                        <p className="text-ide-text font-medium">{data.entities?.length || 0} Entities, {data.pages?.length || 0} Pages</p>
+                        <span className="text-[10px] uppercase font-bold text-ide-muted tracking-widest">Complexity</span>
+                        <p className="text-ide-text font-medium mt-1 text-base">{data.entities?.length || 0} Models, {data.pages?.length || 0} Routes</p>
                      </div>
                      <div>
-                        <span className="text-xs uppercase font-bold text-ide-muted">Design Style</span>
-                        <p className="text-ide-text font-medium">{data.design?.theme} / {data.design?.navStyle}</p>
+                        <span className="text-[10px] uppercase font-bold text-ide-muted tracking-widest">Vibe</span>
+                        <div className="flex items-center gap-2 mt-1">
+                            <div className="w-3 h-3 rounded-full" style={{ background: data.design?.primaryColor }}></div>
+                            <p className="text-ide-text font-medium text-base">{data.design?.theme}</p>
+                        </div>
                      </div>
                   </div>
 
-                  <div className="mt-6">
-                     <span className="text-xs uppercase font-bold text-ide-muted">Features</span>
-                     <div className="flex flex-wrap gap-2 mt-2">
-                        {data.features?.map(f => (
-                           <span key={f} className="px-2 py-1 rounded-md bg-ide-bg border border-ide-border text-xs text-ide-text">{f}</span>
-                        ))}
-                     </div>
-                  </div>
-
-                  <div className="mt-6">
-                     <span className="text-xs uppercase font-bold text-ide-muted">Description</span>
-                     <p className="text-sm text-ide-text mt-1 italic opacity-80 border-l-2 border-ide-accent pl-3">
+                  <div className="space-y-4 pt-6 border-t border-white/5">
+                     <span className="text-[10px] uppercase font-bold text-ide-muted tracking-widest">Objective</span>
+                     <p className="text-ide-text/80 italic border-l-2 border-ide-accent pl-4 py-1 leading-relaxed">
                         "{data.description}"
                      </p>
                   </div>
                </div>
                
-               <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-500 text-sm">
-                  <Palette size={20} />
-                  <p>The <strong>Planner Agent</strong> will use your entities and page list to structure the application architecture.</p>
+               <div className="flex items-start gap-4 p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
+                  <Palette className="text-blue-400 shrink-0 mt-0.5" size={20} />
+                  <div>
+                      <h4 className="text-blue-400 font-bold text-sm">Ready to Synthesize</h4>
+                      <p className="text-blue-300/70 text-sm mt-1">The Planner agent has verified the requirements. Click "Generate" to begin the autonomous build process.</p>
+                  </div>
                </div>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-6 border-t border-ide-border bg-ide-panel flex justify-between items-center">
+        <div className="px-8 py-6 border-t border-ide-border bg-black/20 backdrop-blur-xl flex justify-between items-center z-10">
           <button 
             onClick={handleBack}
-            className="px-6 py-2.5 rounded-lg text-ide-muted hover:text-ide-text hover:bg-ide-bg transition-colors flex items-center gap-2 font-medium"
+            className="px-6 py-3 rounded-xl text-ide-muted hover:text-ide-text hover:bg-white/5 transition-colors flex items-center gap-2 font-medium text-sm"
           >
-            {step === 1 ? 'Cancel' : <><ArrowLeft size={18} /> Back</>}
+            {step === 1 ? 'Cancel' : <><ArrowLeft size={16} /> Previous</>}
           </button>
           
           <button 
             onClick={handleNext}
             disabled={step === 4 ? false : (step === 1 && !data.name) || (step === 2 && !data.description)}
-            className="px-8 py-2.5 rounded-lg bg-ide-accent hover:bg-ide-accentHover text-white font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+            className="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
           >
-            {step === 4 ? 'Generate App' : <>Next <ArrowRight size={18} /></>}
+            {step === 4 ? 'Initialize Swarm' : <>Next <ArrowRight size={16} /></>}
           </button>
         </div>
       </div>
