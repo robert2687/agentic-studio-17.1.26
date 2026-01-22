@@ -1,79 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agentic Studio Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        ide: {
-                            bg: '#09090b', // Zinc-950
-                            sidebar: '#0c0a09', // Stone-950 roughly
-                            panel: '#18181b', // Zinc-900
-                            border: '#27272a', // Zinc-800
-                            accent: '#3b82f6', // Blue-500
-                            accentHover: '#2563eb', // Blue-600
-                            text: '#e4e4e7', // Zinc-200
-                            muted: '#a1a1aa' // Zinc-400
-                        }
-                    },
-                    animation: {
-                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'typewriter': 'blink 1s step-end infinite'
-                    },
-                    keyframes: {
-                        blink: {
-                            '0%, 100%': {
-                                opacity: '1'
-                            },
-                            '50%': {
-                                opacity: '0'
-                            },
-                        }
-                    }
-                }
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              ide: {
+                bg: '#09090b', // Zinc-950
+                sidebar: '#0c0a09', // Stone-950 roughly
+                panel: '#18181b', // Zinc-900
+                border: '#27272a', // Zinc-800
+                accent: '#3b82f6', // Blue-500
+                accentHover: '#2563eb', // Blue-600
+                text: '#e4e4e7', // Zinc-200
+                muted: '#a1a1aa' // Zinc-400
+              }
+            },
+            animation: {
+              'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'typewriter': 'blink 1s step-end infinite'
+            },
+            keyframes: {
+              blink: {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0' },
+              }
             }
+          }
         }
+      }
     </script>
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 5px;
-            border: 2px solid #09090b;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3f3f46;
-        }
-
-        /* Hide scrollbar for cleaner look in specific areas if needed */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #27272a;
+        border-radius: 5px;
+        border: 2px solid #09090b;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #3f3f46;
+      }
+      /* Hide scrollbar for cleaner look in specific areas if needed */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
     </style>
-    <script type="importmap">
-        {
+  <script type="importmap">
+{
   "imports": {
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
@@ -84,10 +75,7 @@
 }
 </script>
 </head>
-
-<body class="bg-ide-bg text-ide-text h-screen overflow-hidden selection:bg-ide-accent selection:text-white antialiased">
+  <body class="bg-ide-bg text-ide-text h-screen overflow-hidden selection:bg-ide-accent selection:text-white antialiased">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-</body>
-
+  </body>
 </html>

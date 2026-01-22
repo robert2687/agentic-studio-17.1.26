@@ -1,8 +1,0 @@
-.stat-card-surface {
-    background-color: #0f172acc;
-    background-color: color-mix(in srgb, var(--color-surface), transparent 20%);
-}
-
-.stat-card-text-base {
-    color: var(--color-text-base);
-}
